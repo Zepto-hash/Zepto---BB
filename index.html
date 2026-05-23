@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zepto BB</title>
+    <title>Zepto Acc Bot</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Telegram Web App SDK -->
@@ -11,68 +11,129 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between font-sans">
 
-    <!-- Header Section -->
-    <header class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-        <h1 class="text-xl font-bold tracking-wider text-amber-500">ZEPTO BB</h1>
-        <div id="user-display" class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-300">
-            Loading player...
+    <!-- Top Header Bar -->
+    <header class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950 sticky top-0 z-50">
+        <h1 class="text-xl font-black tracking-wider text-amber-500">ZEPTO ACC</h1>
+        <div class="flex items-center gap-2">
+            <div class="bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full text-amber-400 font-bold text-xs">
+                🪙 <span id="coin-balance">2500</span> BB
+            </div>
+            <div id="user-display" class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-300">
+                Loading...
+            </div>
         </div>
     </header>
 
-    <!-- Main Content Display -->
-    <main class="flex-1 p-4 flex flex-col items-center justify-center">
+    <!-- Main Content App Body -->
+    <main class="flex-1 p-4 max-w-md w-full mx-auto space-y-4">
         
-        <!-- Shop Tab Content -->
-        <div id="shop-tab" class="w-full max-w-md bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center">
-            <h2 class="text-2xl font-bold mb-2">BB Item Shop</h2>
-            <p class="text-slate-400 mb-6 text-sm">Upgrade your gear and boosts.</p>
-            <button class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 px-4 rounded-xl transition shadow-lg shadow-amber-500/20">
-                Buy Starter Pack
-            </button>
+        <!-- SHOP TAB (Account Items Catalog) -->
+        <div id="shop-tab" class="space-y-4">
+            <div class="text-left mb-2">
+                <h2 class="text-xl font-bold">Premium Accounts</h2>
+                <p class="text-xs text-slate-400">Instant delivery after purchase.</p>
+            </div>
+
+            <!-- Item 1: Premium Streaming -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+                <div>
+                    <span class="bg-red-500/10 text-red-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-red-500/20">Streaming</span>
+                    <h3 class="font-bold text-base mt-1">Netflix Premium 4K</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Stock: <span id="stock-netflix" class="text-emerald-400 font-semibold">14 left</span></p>
+                </div>
+                <div class="text-right">
+                    <span class="block font-black text-amber-500 text-sm mb-2">500 BB</span>
+                    <button onclick="buyAccount('netflix', 500, 'Netflix Premium 4K', 'Email: netflixpass12@gg.com | Pass: zeptobb2026')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition">
+                        Buy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 2: Premium Gaming -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+                <div>
+                    <span class="bg-purple-500/10 text-purple-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-purple-500/20">Gaming</span>
+                    <h3 class="font-bold text-base mt-1">Minecraft Premium Full Access</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Stock: <span id="stock-mc" class="text-emerald-400 font-semibold">5 left</span></p>
+                </div>
+                <div class="text-right">
+                    <span class="block font-black text-amber-500 text-sm mb-2">1200 BB</span>
+                    <button onclick="buyAccount('mc', 1200, 'Minecraft Premium', 'User: SteveMiner | Pass: CraftBB772')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition">
+                        Buy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 3: Developer/AI -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+                <div>
+                    <span class="bg-blue-500/10 text-blue-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-blue-500/20">AI / Tech</span>
+                    <h3 class="font-bold text-base mt-1">ChatGPT Plus (1 Month)</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Stock: <span id="stock-gpt" class="text-amber-400 font-semibold">2 left</span></p>
+                </div>
+                <div class="text-right">
+                    <span class="block font-black text-amber-500 text-sm mb-2">2000 BB</span>
+                    <button onclick="buyAccount('gpt', 2000, 'ChatGPT Plus', 'Token: sk-zepto-acc-example-key-9921')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition">
+                        Buy
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Wallet Tab Content (Hidden by default) -->
-        <div id="wallet-tab" class="w-full max-w-md bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center hidden">
-            <h2 class="text-2xl font-bold mb-2">Your Wallet</h2>
+        <!-- WALLET TAB -->
+        <div id="wallet-tab" class="w-full bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center hidden">
+            <h2 class="text-xl font-bold mb-1">Add Balance</h2>
+            <p class="text-xs text-slate-400 mb-6">Deposit crypto to fund your account store balance.</p>
             <div class="text-4xl font-black text-emerald-400 my-4">0.00 TON</div>
-            <button class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 px-4 rounded-xl transition">
-                Connect Wallet
+            <button class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-sm transition">
+                Connect Crypto Wallet
             </button>
         </div>
 
-        <!-- Profile Tab Content (Hidden by default) -->
-        <div id="profile-tab" class="w-full max-w-md bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center hidden">
-            <h2 class="text-2xl font-bold mb-2">Player Profile</h2>
-            <p id="profile-username" class="text-slate-300 text-lg font-medium mb-4">@username</p>
-            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-sm text-slate-400">
-                Status: Verified Beta User
+        <!-- INVENTORY / PROFILE TAB -->
+        <div id="profile-tab" class="w-full bg-slate-950 p-6 rounded-2xl border border-slate-800 hidden space-y-4">
+            <div class="text-center">
+                <h2 class="text-xl font-bold">My Purchased Accounts</h2>
+                <p id="profile-username" class="text-xs text-slate-400 mt-1">@username</p>
+            </div>
+            <hr class="border-slate-800">
+            <!-- Delivery Destination Container -->
+            <div id="inventory-list" class="space-y-2 text-sm text-slate-400 text-center py-4">
+                You haven't bought any accounts yet. Purchased details will show here immediately!
             </div>
         </div>
 
     </main>
 
-    <!-- Navigation Footer Tabs -->
-    <footer class="bg-slate-950 border-t border-slate-800 p-2 grid grid-cols-3 gap-2 text-center sticky bottom-0">
-        <button onclick="switchTab('shop')" class="py-2 text-sm font-bold text-amber-500 focus:outline-none">Shop</button>
-        <button onclick="switchTab('wallet')" class="py-2 text-sm font-bold text-slate-400 focus:outline-none">Wallet</button>
-        <button onclick="switchTab('profile')" class="py-2 text-sm font-bold text-slate-400 focus:outline-none">Profile</button>
+    <!-- Bottom Navigation Footer Tabs -->
+    <footer class="bg-slate-950 border-t border-slate-800 p-2 grid grid-cols-3 gap-2 text-center sticky bottom-0 z-50">
+        <button onclick="switchTab('shop')" class="py-2 text-xs font-bold text-amber-500 focus:outline-none">Store</button>
+        <button onclick="switchTab('wallet')" class="py-2 text-xs font-bold text-slate-400 focus:outline-none">Deposit</button>
+        <button onclick="switchTab('profile')" class="py-2 text-xs font-bold text-slate-400 focus:outline-none">My Accs</button>
     </footer>
 
-    <!-- Core App Logic Script -->
+    <!-- Frontend Core Application Script -->
     <script>
+        // Initialize Telegram Custom View
         const tg = window.Telegram.WebApp;
         tg.ready();
-        tg.expand(); // Forces full screen inside Telegram
+        tg.expand();
 
+        // Account Store Parameters
+        let balance = 2500;
+        let stocks = { netflix: 14, mc: 5, gpt: 2 };
+
+        // Fetch Data from Opened Profile Link
         const user = tg.initDataUnsafe?.user;
         if (user) {
             document.getElementById('user-display').innerText = user.first_name;
             document.getElementById('profile-username').innerText = user.username ? '@' + user.username : user.first_name;
         } else {
-            document.getElementById('user-display').innerText = "Web Preview";
-            document.getElementById('profile-username').innerText = "@local_player";
+            document.getElementById('user-display').innerText = "Developer";
+            document.getElementById('profile-username').innerText = "@local_host";
         }
 
+        // Switching Application Navigation Panes
         function switchTab(tabName) {
             const tabs = ['shop', 'wallet', 'profile'];
             tabs.forEach(tab => {
@@ -83,6 +144,45 @@
                     element.classList.add('hidden');
                 }
             });
+        }
+
+        // Shop Purchase Processing Logic
+        function buyAccount(itemId, price, itemName, accountDetails) {
+            if (stocks[itemId] <= 0) {
+                tg.showAlert("❌ Sorry, this item is completely out of stock!");
+                return;
+            }
+
+            if (balance >= price) {
+                // Deduct metrics
+                balance -= price;
+                stocks[itemId]--;
+
+                // Update storefront values dynamically
+                document.getElementById('coin-balance').innerText = balance;
+                document.getElementById(`stock-${itemId}`).innerText = `${stocks[itemId]} left`;
+
+                // Wipe initial empty placeholder if this is the first purchase
+                const invList = document.getElementById('inventory-list');
+                if (invList.innerText.includes("haven't bought")) {
+                    invList.innerHTML = "";
+                }
+
+                // Append delivery login item directly into the Inventory Tab
+                const entry = document.createElement('div');
+                entry.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl text-left font-mono text-xs space-y-1 mb-2";
+                entry.innerHTML = `
+                    <div class="text-amber-400 font-bold font-sans text-sm">✅ ${itemName}</div>
+                    <div class="text-white bg-slate-950 p-2 rounded mt-1 select-all">${accountDetails}</div>
+                `;
+                invList.appendChild(entry);
+
+                // Run UI feedback routines
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                tg.showAlert(`🎉 Success! Your account details for ${itemName} have been delivered to the 'My Accs' tab.`);
+            } else {
+                tg.showAlert("❌ Insufficient Store Balance! Please deposit more funds.");
+            }
         }
     </script>
 </body>

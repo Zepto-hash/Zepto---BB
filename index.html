@@ -34,8 +34,8 @@
                 <p class="text-xs text-slate-400">Instant delivery after purchase.</p>
             </div>
 
-            <!-- Item 1: Premium Streaming -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+            <!-- Item 1: Netflix Premium 4K -->
+            <div id="product-netflix" class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center transition-all duration-300">
                 <div>
                     <span class="bg-red-500/10 text-red-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-red-500/20">Streaming</span>
                     <h3 class="font-bold text-base mt-1">Netflix Premium 4K</h3>
@@ -50,7 +50,7 @@
             </div>
 
             <!-- Item 2: Premium Gaming -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+            <div id="product-mc" class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center transition-all duration-300">
                 <div>
                     <span class="bg-purple-500/10 text-purple-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-purple-500/20">Gaming</span>
                     <h3 class="font-bold text-base mt-1">Minecraft Premium Full Access</h3>
@@ -65,7 +65,7 @@
             </div>
 
             <!-- Item 3: Developer/AI -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+            <div id="product-gpt" class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center transition-all duration-300">
                 <div>
                     <span class="bg-blue-500/10 text-blue-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-blue-500/20">AI / Tech</span>
                     <h3 class="font-bold text-base mt-1">ChatGPT Plus (1 Month)</h3>
@@ -78,28 +78,31 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Reset Button shown only if a specific link filter is active -->
+            <button id="view-all-btn" onclick="clearFilter()" class="w-full hidden bg-slate-800 text-slate-300 font-medium text-xs py-2 rounded-xl border border-slate-700">
+                ← View All Products
+            </button>
         </div>
 
         <!-- WALLET TAB -->
         <div id="wallet-tab" class="w-full bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center hidden">
             <h2 class="text-xl font-bold mb-1">Add Balance</h2>
-            <p class="text-xs text-slate-400 mb-6">Deposit crypto to fund your account store balance.</p>
             <div class="text-4xl font-black text-emerald-400 my-4">0.00 TON</div>
-            <button class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-sm transition">
+            <button class="w-full bg-emerald-500 text-slate-950 font-bold py-3 px-4 rounded-xl text-sm">
                 Connect Crypto Wallet
             </button>
         </div>
 
-        <!-- INVENTORY / PROFILE TAB -->
+        <!-- INVENTORY TAB -->
         <div id="profile-tab" class="w-full bg-slate-950 p-6 rounded-2xl border border-slate-800 hidden space-y-4">
             <div class="text-center">
                 <h2 class="text-xl font-bold">My Purchased Accounts</h2>
                 <p id="profile-username" class="text-xs text-slate-400 mt-1">@username</p>
             </div>
             <hr class="border-slate-800">
-            <!-- Delivery Destination Container -->
             <div id="inventory-list" class="space-y-2 text-sm text-slate-400 text-center py-4">
-                You haven't bought any accounts yet. Purchased details will show here immediately!
+                Purchased details will show here immediately!
             </div>
         </div>
 
@@ -114,16 +117,13 @@
 
     <!-- Frontend Core Application Script -->
     <script>
-        // Initialize Telegram Custom View
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // Account Store Parameters
         let balance = 2500;
         let stocks = { netflix: 14, mc: 5, gpt: 2 };
 
-        // Fetch Data from Opened Profile Link
         const user = tg.initDataUnsafe?.user;
         if (user) {
             document.getElementById('user-display').innerText = user.first_name;
@@ -133,7 +133,35 @@
             document.getElementById('profile-username').innerText = "@local_host";
         }
 
-        // Switching Application Navigation Panes
+        // --- THE DEEP LINK PRODUCT LOGIC ---
+        // Reads parameter from the URL link: e.g., t.me/bot?startapp=netflix
+        const startParam = tg.initDataUnsafe?.start_param; 
+        
+        if (startParam) {
+            filterProduct(startParam);
+        }
+
+        function filterProduct(productId) {
+            const items = ['netflix', 'mc', 'gpt'];
+            if (items.includes(productId)) {
+                // Hide all other items, only show the linked one
+                items.forEach(id => {
+                    document.getElementById(`product-${id}`).classList.add('hidden');
+                });
+                document.getElementById(`product-${productId}`).classList.remove('hidden');
+                document.getElementById('view-all-btn').classList.remove('hidden');
+            }
+        }
+
+        function clearFilter() {
+            const items = ['netflix', 'mc', 'gpt'];
+            items.forEach(id => {
+                document.getElementById(`product-${id}`).classList.remove('hidden');
+            });
+            document.getElementById('view-all-btn').classList.add('hidden');
+        }
+        // ------------------------------------
+
         function switchTab(tabName) {
             const tabs = ['shop', 'wallet', 'profile'];
             tabs.forEach(tab => {
@@ -146,42 +174,29 @@
             });
         }
 
-        // Shop Purchase Processing Logic
         function buyAccount(itemId, price, itemName, accountDetails) {
             if (stocks[itemId] <= 0) {
-                tg.showAlert("❌ Sorry, this item is completely out of stock!");
+                tg.showAlert("❌ Out of stock!");
                 return;
             }
-
             if (balance >= price) {
-                // Deduct metrics
                 balance -= price;
                 stocks[itemId]--;
-
-                // Update storefront values dynamically
                 document.getElementById('coin-balance').innerText = balance;
                 document.getElementById(`stock-${itemId}`).innerText = `${stocks[itemId]} left`;
 
-                // Wipe initial empty placeholder if this is the first purchase
                 const invList = document.getElementById('inventory-list');
-                if (invList.innerText.includes("haven't bought")) {
-                    invList.innerHTML = "";
-                }
+                if (invList.innerText.includes("will show here")) invList.innerHTML = "";
 
-                // Append delivery login item directly into the Inventory Tab
                 const entry = document.createElement('div');
-                entry.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl text-left font-mono text-xs space-y-1 mb-2";
-                entry.innerHTML = `
-                    <div class="text-amber-400 font-bold font-sans text-sm">✅ ${itemName}</div>
-                    <div class="text-white bg-slate-950 p-2 rounded mt-1 select-all">${accountDetails}</div>
-                `;
+                entry.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl text-left font-mono text-xs mb-2";
+                entry.innerHTML = `<div class="text-amber-400 font-bold font-sans text-sm">✅ ${itemName}</div><div class="text-white bg-slate-950 p-2 rounded mt-1 select-all">${accountDetails}</div>`;
                 invList.appendChild(entry);
 
-                // Run UI feedback routines
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                tg.showAlert(`🎉 Success! Your account details for ${itemName} have been delivered to the 'My Accs' tab.`);
+                tg.showAlert(`🎉 Delivered to your 'My Accs' tab!`);
             } else {
-                tg.showAlert("❌ Insufficient Store Balance! Please deposit more funds.");
+                tg.showAlert("❌ Insufficient Balance!");
             }
         }
     </script>
